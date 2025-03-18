@@ -1,4 +1,6 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
+    console.log('DOM fully loaded and parsed');
+
     // HEADER NAVIGATION FUNCTIONALITY
     const logo = document.querySelector('.navbar .logo');
     const aboutLink = document.querySelector('.navbar-menu a:nth-child(1)');
@@ -9,16 +11,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Logo - Home navigation
     if (logo) {
-        logo.addEventListener('click', function(e) {
+        logo.addEventListener('click', function (e) {
             e.preventDefault();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
         logo.style.cursor = 'pointer';
+    } else {
+        console.error('Logo element not found!');
     }
 
     // About Us navigation
     if (aboutLink) {
-        aboutLink.addEventListener('click', function(e) {
+        aboutLink.addEventListener('click', function (e) {
             e.preventDefault();
             const sectionTitle = Array.from(document.querySelectorAll('h2, h3')).find(
                 heading => heading.textContent.includes('Transforming Ideas into Remarkable Solutions')
@@ -34,11 +38,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         });
+    } else {
+        console.error('About link not found!');
     }
 
     // Services navigation
     if (servicesLink) {
-        servicesLink.addEventListener('click', function(e) {
+        servicesLink.addEventListener('click', function (e) {
             e.preventDefault();
             const sectionTitle = Array.from(document.querySelectorAll('h2, h3')).find(
                 heading => heading.textContent.trim() === 'Our Exquisite Gallery'
@@ -56,9 +62,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (gallerySection) {
                         gallerySection.scrollIntoView({ behavior: 'smooth' });
                     } else {
-                        const anyGallerySection = document.querySelector('.gallery-section') || 
-                                                  document.querySelector('[id*="gallery"]') ||
-                                                  document.querySelector('[class*="gallery"]');
+                        const anyGallerySection = document.querySelector('.gallery-section') ||
+                            document.querySelector('[id*="gallery"]') ||
+                            document.querySelector('[class*="gallery"]');
                         if (anyGallerySection) {
                             anyGallerySection.scrollIntoView({ behavior: 'smooth' });
                         } else {
@@ -68,11 +74,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         });
+    } else {
+        console.error('Services link not found!');
     }
 
     // Support navigation
     if (supportLink) {
-        supportLink.addEventListener('click', function(e) {
+        supportLink.addEventListener('click', function (e) {
             e.preventDefault();
             const findUsSection = document.querySelector('#find-us');
             if (findUsSection) {
@@ -81,11 +89,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('Find Us section not found!');
             }
         });
+    } else {
+        console.error('Support link not found!');
     }
 
     // Contact Us
     if (contactLink) {
-        contactLink.addEventListener('click', function(e) {
+        contactLink.addEventListener('click', function (e) {
             e.preventDefault();
             const contactModal = document.getElementById('simple-modal');
             if (contactModal) {
@@ -95,16 +105,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('Contact modal not found!');
             }
         });
+    } else {
+        console.error('Contact link not found!');
     }
 
     // Call Us button
     if (callUsBtn) {
-        callUsBtn.addEventListener('click', function(e) {
+        callUsBtn.addEventListener('click', function (e) {
             e.preventDefault();
-            const findUsSection = document.querySelector('#find-us') || 
-                                  document.querySelector('.find-us') ||
-                                  document.querySelector('[id*="find"]') ||
-                                  document.querySelector('[class*="find"]');
+            const findUsSection = document.querySelector('#find-us') ||
+                document.querySelector('.find-us') ||
+                document.querySelector('[id*="find"]') ||
+                document.querySelector('[class*="find"]');
             if (!findUsSection) {
                 const findUsHeading = Array.from(document.querySelectorAll('h1, h2, h3, h4, h5, h6')).find(
                     heading => heading.textContent.includes('Find Us')
@@ -119,23 +131,31 @@ document.addEventListener('DOMContentLoaded', function() {
                 findUsSection.scrollIntoView({ behavior: 'smooth' });
             }
         });
+    } else {
+        console.error('Call Us button not found!');
     }
 
     // Mobile menu toggle function
     function toggleMenu() {
         const navbarMenu = document.querySelector('.navbar-menu');
-        navbarMenu.classList.toggle('show');
+        if (navbarMenu) {
+            navbarMenu.classList.toggle('show');
+        } else {
+            console.error('Navbar menu not found!');
+        }
     }
 
     const burgerMenuButton = document.querySelector('.burger-menu');
     if (burgerMenuButton) {
         burgerMenuButton.addEventListener('click', toggleMenu);
+    } else {
+        console.error('Burger menu button not found!');
     }
 
     // Close mobile menu when a link is clicked
     const mobileMenuLinks = document.querySelectorAll('.navbar-menu a');
     mobileMenuLinks.forEach(link => {
-        link.addEventListener('click', function() {
+        link.addEventListener('click', function () {
             const navbarMenu = document.querySelector('.navbar-menu');
             if (window.innerWidth <= 768) {
                 navbarMenu.classList.remove('show');
@@ -168,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function() {
         adjustMenuVisibility();
         window.addEventListener('resize', adjustMenuVisibility);
 
-        burgerMenu.addEventListener('click', function() {
+        burgerMenu.addEventListener('click', function () {
             const navbarMenu = document.querySelector('.navbar-menu');
             if (navbarMenu) {
                 if (navbarMenu.classList.contains('show')) {
@@ -194,7 +214,7 @@ document.addEventListener('DOMContentLoaded', function() {
             burgerMenuElem.style.display = 'none';
             burgerMenuElem.style.cursor = 'pointer';
             navbar.insertBefore(burgerMenuElem, navbar.firstChild);
-            burgerMenuElem.addEventListener('click', function() {
+            burgerMenuElem.addEventListener('click', function () {
                 const navbarMenu = document.querySelector('.navbar-menu');
                 if (navbarMenu) {
                     if (navbarMenu.classList.contains('show')) {
@@ -221,12 +241,12 @@ document.addEventListener('DOMContentLoaded', function() {
     if (captchaTextElement && captchaInput && refreshButton && contactForm) {
         generateCaptcha();
 
-        refreshButton.addEventListener('click', function() {
+        refreshButton.addEventListener('click', function () {
             generateCaptcha();
             captchaInput.value = '';
         });
 
-        contactForm.addEventListener('submit', function(e) {
+        contactForm.addEventListener('submit', function (e) {
             e.preventDefault();
             if (captchaInput.value === captchaValue) {
                 alert('Form validation successful! Ready to be sent with Email.js');
@@ -238,6 +258,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 captchaInput.value = '';
             }
         });
+    } else {
+        console.error('CAPTCHA elements not found!');
     }
 
     function generateCaptcha() {
@@ -260,11 +282,11 @@ document.addEventListener('DOMContentLoaded', function() {
             message: document.getElementById("message").value
         };
         emailjs.send("service_h798uiu", "template_e1i7b3p", params)
-            .then(function() {
+            .then(function () {
                 alert("Email Sent!!");
                 document.getElementById("contactForm").reset();
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 console.log("Error sending email:", error);
                 alert("Failed to send email. Please try again.");
             });
@@ -272,10 +294,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const contactFormElem = document.getElementById("contactForm");
     if (contactFormElem) {
-        contactFormElem.addEventListener("submit", function(event) {
+        contactFormElem.addEventListener("submit", function (event) {
             event.preventDefault();
             sendMail();
         });
+    } else {
+        console.error('Contact form element not found!');
     }
 
     // SLIDER FUNCTIONALITY
@@ -289,6 +313,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const sliderImages = document.querySelector('.slider-images');
     if (sliderImages) {
         sliderImages.style.transition = 'transform 0.5s ease-in-out';
+    } else {
+        console.error('Slider images container not found!');
     }
 
     function moveSlide(step) {
@@ -322,6 +348,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (slider) {
             slider.addEventListener('mouseenter', stopAutoSlide);
             slider.addEventListener('mouseleave', startAutoSlide);
+        } else {
+            console.error('Slider container not found!');
         }
 
         document.querySelectorAll('.slider-button').forEach(button => {
@@ -335,12 +363,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 startAutoSlide();
             });
         });
+    } else {
+        console.error('Slides not found!');
     }
 
     // FAQ FUNCTIONALITY
     const questions = document.querySelectorAll('.faq-unique-question');
     questions.forEach(question => {
-        question.addEventListener('click', function() {
+        question.addEventListener('click', function () {
             this.classList.toggle('active');
             const answer = this.nextElementSibling;
             answer.classList.toggle('active');
@@ -350,22 +380,26 @@ document.addEventListener('DOMContentLoaded', function() {
     // SIMPLE MODAL FUNCTIONALITY
     var exploreButton = document.querySelector(".hero-content .cta-button");
     if (exploreButton) {
-        exploreButton.addEventListener('click', function(e) {
+        exploreButton.addEventListener('click', function (e) {
             e.preventDefault();
             document.getElementById('simple-modal').style.display = 'block';
             document.body.style.overflow = 'hidden';
         });
+    } else {
+        console.error('Explore button not found!');
     }
 
     var closeButton = document.querySelector(".simple-close");
     if (closeButton) {
-        closeButton.addEventListener('click', function() {
+        closeButton.addEventListener('click', function () {
             document.getElementById('simple-modal').style.display = 'none';
             document.body.style.overflow = 'auto';
         });
+    } else {
+        console.error('Close button not found!');
     }
 
-    window.addEventListener('click', function(event) {
+    window.addEventListener('click', function (event) {
         const modal = document.getElementById('simple-modal');
         if (event.target == modal) {
             modal.style.display = 'none';
@@ -375,19 +409,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var simpleForm = document.getElementById('simple-form');
     if (simpleForm) {
-        simpleForm.addEventListener('submit', function(e) {
+        simpleForm.addEventListener('submit', function (e) {
             e.preventDefault();
             alert('Thank you for your inquiry! We will contact you shortly.');
             document.getElementById('simple-modal').style.display = 'none';
             document.body.style.overflow = 'auto';
             this.reset();
         });
+    } else {
+        console.error('Simple form not found!');
     }
 
     // CONTACT FORM FUNCTIONALITY
     const contactForm = document.getElementById('contactForm');
     if (contactForm) {
-        contactForm.addEventListener('submit', function(e) {
+        contactForm.addEventListener('submit', function (e) {
             e.preventDefault();
             const firstName = document.getElementById('firstName').value;
             const lastName = document.getElementById('lastName').value;
@@ -399,6 +435,8 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Thank you for your message. We will get back to you soon!');
             contactForm.reset();
         });
+    } else {
+        console.error('Contact form not found!');
     }
 
     // CAPTCHA variables
@@ -411,12 +449,12 @@ document.addEventListener('DOMContentLoaded', function() {
     if (captchaTextElement && captchaInput && refreshButton && contactForm) {
         generateCaptcha();
 
-        refreshButton.addEventListener('click', function() {
+        refreshButton.addEventListener('click', function () {
             generateCaptcha();
             captchaInput.value = '';
         });
 
-        contactForm.addEventListener('submit', function(e) {
+        contactForm.addEventListener('submit', function (e) {
             e.preventDefault();
             if (captchaInput.value === captchaValue) {
                 alert('Form validation successful! Ready to be sent with Email.js');
@@ -428,6 +466,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 captchaInput.value = '';
             }
         });
+    } else {
+        console.error('CAPTCHA elements not found!');
     }
 
     function generateCaptcha() {
@@ -450,11 +490,11 @@ document.addEventListener('DOMContentLoaded', function() {
             message: document.getElementById("message").value
         };
         emailjs.send("service_h798uiu", "template_e1i7b3p", params)
-            .then(function() {
+            .then(function () {
                 alert("Email Sent!!");
                 document.getElementById("contactForm").reset();
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 console.log("Error sending email:", error);
                 alert("Failed to send email. Please try again.");
             });
@@ -462,9 +502,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const contactFormElem = document.getElementById("contactForm");
     if (contactFormElem) {
-        contactFormElem.addEventListener("submit", function(event) {
+        contactFormElem.addEventListener("submit", function (event) {
             event.preventDefault();
             sendMail();
         });
+    } else {
+        console.error('Contact form element not found!');
     }
 });
