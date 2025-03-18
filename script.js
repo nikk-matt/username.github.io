@@ -401,49 +401,39 @@ if (callUsBtn) {
     }
 
     // FAQ FUNCTIONALITY
-    const questions = document.querySelectorAll('.faq-unique-question');
+    document.addEventListener('DOMContentLoaded', function() {
+    // Get all FAQ items
+    const faqItems = document.querySelectorAll('.faq-unique-item');
     
-    questions.forEach(question => {
+    // Add click event listener to each question
+    faqItems.forEach(function(item) {
+        const question = item.querySelector('.faq-unique-question');
+        const answer = item.querySelector('.faq-unique-answer');
+        
         question.addEventListener('click', function() {
-            // Toggle active class on clicked question
-            this.classList.toggle('active');
+            // Toggle active class on the item
+            item.classList.toggle('active');
             
-            // Get corresponding answer
-            const answer = this.nextElementSibling;
+            // Toggle the display of the answer
+            if (item.classList.contains('active')) {
+                answer.style.maxHeight = answer.scrollHeight + 'px';
+                question.querySelector('.faq-unique-arrow').classList.add('rotate');
+            } else {
+                answer.style.maxHeight = '0px';
+                question.querySelector('.faq-unique-arrow').classList.remove('rotate');
+            }
             
-            // Toggle active class on answer
-            answer.classList.toggle('active');
+            // Close other open items
+            faqItems.forEach(function(otherItem) {
+                if (otherItem !== item && otherItem.classList.contains('active')) {
+                    otherItem.classList.remove('active');
+                    otherItem.querySelector('.faq-unique-answer').style.maxHeight = '0px';
+                    otherItem.querySelector('.faq-unique-arrow').classList.remove('rotate');
+                }
+            });
         });
     });
-
-    // SIMPLE MODAL FUNCTIONALITY
-    // Add click event to the "Explore Our Services" button
-    var exploreButton = document.querySelector(".hero-content .cta-button");
-    if (exploreButton) {
-        exploreButton.addEventListener('click', function(e) {
-            e.preventDefault();
-            document.getElementById('simple-modal').style.display = 'block';
-            document.body.style.overflow = 'hidden'; // Prevent scrolling
-        });
-    }
-    
-    // Close modal when clicking on X
-    var closeButton = document.querySelector(".simple-close");
-    if (closeButton) {
-        closeButton.addEventListener('click', function() {
-            document.getElementById('simple-modal').style.display = 'none';
-            document.body.style.overflow = 'auto'; // Enable scrolling
-        });
-    }
-    
-    // Close modal when clicking outside
-    window.addEventListener('click', function(event) {
-        const modal = document.getElementById('simple-modal');
-        if (event.target == modal) {
-            modal.style.display = 'none';
-            document.body.style.overflow = 'auto'; // Enable scrolling
-        }
-    });
+});
     
     // Form submission
     var simpleForm = document.getElementById('simple-form');
@@ -790,81 +780,69 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 document.addEventListener('DOMContentLoaded', function() {
-    // CAPTCHA variables
-    const captchaTextElement = document.getElementById('captchaText');
-    const captchaInput = document.getElementById('captchaInput');
-    const refreshButton = document.getElementById('refreshCaptcha');
-    const contactForm = document.getElementById('contactForm');
-    let captchaValue = '';
-    
-    // Generate initial CAPTCHA
-    generateCaptcha();
-    
-    // Refresh CAPTCHA button handler
-    refreshButton.addEventListener('click', function() {
-        generateCaptcha();
-        captchaInput.value = '';
-    });
-    
-    // Form submission handler
-    contactForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Validate CAPTCHA
-        if (captchaInput.value === captchaValue) {
-            // CAPTCHA correct - you can add Email.js code here
-            alert('Form validation successful! Ready to be sent with Email.js');
-            
-            // For demonstration only - reset form
-            contactForm.reset();
-            generateCaptcha();
-        } else {
-            // CAPTCHA incorrect
-            alert('Incorrect verification code. Please try again.');
-            generateCaptcha();
-            captchaInput.value = '';
-        }
-    });
-    
-    // Generate simple CAPTCHA
+    // Generate a random string for CAPTCHA
     function generateCaptcha() {
-        // Generate random string (5 characters)
-        const characters = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
-        captchaValue = '';
+        const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        let captcha = '';
+        for (let i = 0; i < 6; i++) {
+            captcha += chars[Math.floor(Math.random() * chars.length)];
+        }
+        return captcha;
+    }
+
+    // Display CAPTCHA in the element
+    const captchaText = document.getElementById('captchaText');
+    let captchaValue = generateCaptcha();
+    
+    if (captchaText) {
+        captchaText.textContent = captchaValue;
         
-        for (let i = 0; i < 5; i++) {
-            captchaValue += characters.charAt(Math.floor(Math.random() * characters.length));
+        // Refresh CAPTCHA button
+        const refreshBtn = document.getElementById('refreshCaptcha');
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', function() {
+                captchaValue = generateCaptcha();
+                captchaText.textContent = captchaValue;
+            });
         }
         
-        // Display in HTML with applied style
-        captchaTextElement.textContent = captchaValue;
+        // Form submission
+        const contactForm = document.getElementById('contactForm');
+        if (contactForm) {
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const captchaInput = document.getElementById('captchaInput').value;
+                if (captchaInput === captchaValue) {
+                    // CAPTCHA is correct, process the form
+                    const firstName = document.getElementById('firstName').value;
+                    const lastName = document.getElementById('lastName').value;
+                    const email = document.getElementById('email').value;
+                    const message = document.getElementById('message').value;
+                    
+                    // You can use emailjs here
+                    emailjs.send("default_service", "template_default", {
+                        from_name: firstName + " " + lastName,
+                        email: email,
+                        message: message
+                    }).then(
+                        function(response) {
+                            alert("Message sent successfully!");
+                            contactForm.reset();
+                            captchaValue = generateCaptcha();
+                            captchaText.textContent = captchaValue;
+                        },
+                        function(error) {
+                            alert("Failed to send message. Error: " + JSON.stringify(error));
+                        }
+                    );
+                } else {
+                    alert("CAPTCHA verification failed. Please try again.");
+                    captchaValue = generateCaptcha();
+                    captchaText.textContent = captchaValue;
+                    document.getElementById('captchaInput').value = '';
+                }
+            });
+        }
     }
 });
-function sendMail() {
-    let params = {
-        ShijilTelecom: "Shijil Telecom Contact Form",
-        time: new Date().toLocaleString(),
-        name: document.getElementById("firstName").value + " " + document.getElementById("lastName").value,
-        email: document.getElementById("email").value,
-        message: document.getElementById("message").value
-    };
-    emailjs.send("service_h798uiu", "template_e1i7b3p", params)
-        .then(function() {
-            alert("Email Sent!!");
-            document.getElementById("contactForm").reset();
-        })
-        .catch(function(error) {
-            console.log("Error sending email:", error);
-            alert("Failed to send email. Please try again.");
-        });
-}
-
-// Add event listener to the form
-document.getElementById("contactForm").addEventListener("submit", function(event) {
-    event.preventDefault();
-    sendMail();
-});
-// Clear the form after submission
-    function clearForm() {
-        document.getElementById('contactForm').reset();
-    }
