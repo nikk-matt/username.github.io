@@ -118,35 +118,35 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
    // Call Us button - scroll to Find Us section 
-if (callUsBtn) {
-    callUsBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        
-        // Try multiple selectors to find the Find Us section
-        const findUsSection = document.querySelector('#find-us') || 
-                             document.querySelector('.find-us') ||
-                             document.querySelector('[id*="find"]') ||
-                             document.querySelector('[class*="find"]');
-                             
-        // If direct ID/class not found, try looking for a heading with "Find Us" text
-        if (!findUsSection) {
-            const findUsHeading = Array.from(document.querySelectorAll('h1, h2, h3, h4, h5, h6')).find(
-                heading => heading.textContent.includes('Find Us')
-            );
+    if (callUsBtn) {
+        callUsBtn.addEventListener('click', function(e) {
+            e.preventDefault();
             
-            if (findUsHeading) {
-                // Scroll to the heading
-                findUsHeading.scrollIntoView({ behavior: 'smooth' });
+            // Try multiple selectors to find the Find Us section
+            const findUsSection = document.querySelector('#find-us') || 
+                                document.querySelector('.find-us') ||
+                                document.querySelector('[id*="find"]') ||
+                                document.querySelector('[class*="find"]');
+                                
+            // If direct ID/class not found, try looking for a heading with "Find Us" text
+            if (!findUsSection) {
+                const findUsHeading = Array.from(document.querySelectorAll('h1, h2, h3, h4, h5, h6')).find(
+                    heading => heading.textContent.includes('Find Us')
+                );
+                
+                if (findUsHeading) {
+                    // Scroll to the heading
+                    findUsHeading.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    console.error('Find Us section not found!');
+                    // Fallback to the original behavior
+                    window.location.href = 'tel:9871723292';
+                }
             } else {
-                console.error('Find Us section not found!');
-                // Fallback to the original behavior
-                window.location.href = 'tel:9871723292';
+                findUsSection.scrollIntoView({ behavior: 'smooth' });
             }
-        } else {
-            findUsSection.scrollIntoView({ behavior: 'smooth' });
-        }
-    });
-}
+        });
+    }
     
     // Mobile menu toggle function
     window.toggleMenu = function() {
@@ -315,7 +315,7 @@ if (callUsBtn) {
         document.head.appendChild(styleElem);
     }
 
-    // NEW CODE: Close the burger menu when clicking outside
+    // Close the burger menu when clicking outside
     document.addEventListener('click', function(event) {
         const navbarMenu = document.querySelector('.navbar-menu');
         const burgerMenuBtn = document.querySelector('.burger-menu');
@@ -349,7 +349,7 @@ if (callUsBtn) {
 
     // Move to a specific slide
     function moveSlide(step) {
-        if (isTransitioning || !sliderImages) return;
+        if (isTransitioning || !sliderImages || !slides.length) return;
 
         isTransitioning = true;
         currentSlide = (currentSlide + step + totalSlides) % totalSlides;
@@ -362,6 +362,8 @@ if (callUsBtn) {
 
     // Start automatic sliding
     function startAutoSlide() {
+        if (!slides.length) return;
+        
         interval = setInterval(() => {
             if (!isTransitioning) {
                 moveSlide(1);
@@ -422,8 +424,17 @@ if (callUsBtn) {
     if (exploreButton) {
         exploreButton.addEventListener('click', function(e) {
             e.preventDefault();
-            document.getElementById('simple-modal').style.display = 'block';
-            document.body.style.overflow = 'hidden'; // Prevent scrolling
+            const contactFormSection = document.getElementById('contact-form-section');
+            if (contactFormSection) {
+                contactFormSection.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                // Fallback to modal if contact form section not found
+                const simpleModal = document.getElementById('simple-modal');
+                if (simpleModal) {
+                    simpleModal.style.display = 'block';
+                    document.body.style.overflow = 'hidden'; // Prevent scrolling
+                }
+            }
         });
     }
     
@@ -431,15 +442,18 @@ if (callUsBtn) {
     var closeButton = document.querySelector(".simple-close");
     if (closeButton) {
         closeButton.addEventListener('click', function() {
-            document.getElementById('simple-modal').style.display = 'none';
-            document.body.style.overflow = 'auto'; // Enable scrolling
+            const simpleModal = document.getElementById('simple-modal');
+            if (simpleModal) {
+                simpleModal.style.display = 'none';
+                document.body.style.overflow = 'auto'; // Enable scrolling
+            }
         });
     }
     
     // Close modal when clicking outside
     window.addEventListener('click', function(event) {
         const modal = document.getElementById('simple-modal');
-        if (event.target == modal) {
+        if (modal && event.target == modal) {
             modal.style.display = 'none';
             document.body.style.overflow = 'auto'; // Enable scrolling
         }
@@ -463,147 +477,16 @@ if (callUsBtn) {
     if (contactForm) {
         contactForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            const firstName = document.getElementById('firstName').value;
-            const lastName = document.getElementById('lastName').value;
-            const email = document.getElementById('email').value;
-            const message = document.getElementById('message').value;
             
-            // Normally, you would send this data to a server
-            console.log('Form submitted:', { firstName, lastName, email, message });
-            
-            // Show success message
-            alert('Thank you for your message. We will get back to you soon!');
-            contactForm.reset();
-        });
-    }
-    
-    // CHATBOT FUNCTIONALITY
-    // Variables for both implementations
-    const chatbotButton = document.getElementById('chatbot-button');
-    const chatbotContainer = document.getElementById('chatbot-container') || document.querySelector('.chatbot-container');
-    const chatbotToggle = document.getElementById('chatbot-toggle');
-    const sendButton = document.getElementById('send-button');
-    const userInput = document.getElementById('user-input');
-    const messagesContainer = document.getElementById('chatbot-messages');
-    
-    if (chatbotButton && chatbotContainer && chatbotToggle) {
-        // Toggle chatbot visibility
-        chatbotButton.addEventListener('click', function() {
-            chatbotContainer.style.display = 'flex';
-            chatbotButton.style.display = 'none';
-        });
-        
-        // Close chatbot
-        chatbotToggle.addEventListener('click', function() {
-            chatbotContainer.style.display = 'none';
-            chatbotButton.style.display = 'flex';
-        });
-        
-        // Close chatbot when clicking outside
-        document.addEventListener('click', function(event) {
-            if (!chatbotContainer.contains(event.target) && 
-                !chatbotButton.contains(event.target) && 
-                chatbotContainer.style.display === 'flex') {
-                chatbotContainer.style.display = 'none';
-                chatbotButton.style.display = 'flex';
+            // Validate CAPTCHA first
+            if (validateCaptcha()) {
+                // Send email if CAPTCHA is valid
+                sendMail();
             }
         });
     }
     
-    if (sendButton && userInput && messagesContainer) {
-        // Send message functionality
-        function sendMessage() {
-            const message = userInput.value.trim();
-            if (message === '') return;
-            
-            // Create user message element
-            const userMessageEl = document.createElement('div');
-            userMessageEl.classList.add('user-message');
-            userMessageEl.textContent = message;
-            messagesContainer.appendChild(userMessageEl);
-            
-            // Clear input
-            userInput.value = '';
-            
-            // Get bot response or use default
-            let botResponse = 'I received your message. How can I help you today?';
-            if (typeof getBotResponse === 'function') {
-                botResponse = getBotResponse(message);
-            }
-            
-            // Simulate typing delay
-            setTimeout(() => {
-                const botMessageEl = document.createElement('div');
-                botMessageEl.classList.add('bot-message');
-                botMessageEl.textContent = botResponse;
-                messagesContainer.appendChild(botMessageEl);
-                
-                // Scroll to bottom
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            }, 800);
-            
-            // Scroll to bottom
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-        
-        sendButton.addEventListener('click', sendMessage);
-        userInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
-        });
-    }
-    
-    // Chatbot knowledge base about Shijil Telecom
-    window.getBotResponse = function(query) {
-        query = query.toLowerCase();
-        
-        // Company information
-        if (query.includes('about') || query.includes('company') || query.includes('who') || query.includes('shijil')) {
-            return "Shijil Telecom specializes in sales, service, and repair of telecommunication equipment. We provide EPABX systems, network cabling, mobile network boosters, CCTV cameras, security systems, and more.";
-        }
-        
-        // Services
-        if (query.includes('service') || query.includes('offer')) {
-            return "Our services include: EPABX systems (NEC, LG Aria, Panasonic, Accord, Siemens, Metrix), Network Cabling, Mobile Network Boosters, CCTV Camera installation, Audio/Video solutions, Security Alarm Systems, Door Phones, and Biometric systems.";
-        }
-        
-        // Contact information
-        if (query.includes('contact') || query.includes('phone') || query.includes('email') || query.includes('reach')) {
-            return "You can contact Shibu MS at: Phone: 9871723292, 9818328079, Email: ms.shibu29@gmail.com";
-        }
-        
-        // EPABX related
-        if (query.includes('epabx') || query.includes('pbx') || query.includes('telephone system')) {
-            return "We offer a range of EPABX systems from brands like NEC, LG Aria, Panasonic, Accord, Siemens, and Metrix. These systems help manage your business communications efficiently.";
-        }
-        
-        // Network related
-        if (query.includes('network') || query.includes('cabling') || query.includes('booster')) {
-            return "Our network solutions include professional cabling services and mobile network boosters to improve connectivity in your facility.";
-        }
-        
-        // Security systems
-        if (query.includes('security') || query.includes('cctv') || query.includes('camera') || query.includes('alarm')) {
-            return "We provide comprehensive security solutions including CCTV cameras, security alarm systems, door phones, and biometric systems to protect your premises.";
-        }
-        
-        // Location
-        if (query.includes('location') || query.includes('address') || query.includes('where')) {
-            return "Please contact us for our current office location and service areas.";
-        }
-        
-        // Business hours
-        if (query.includes('hours') || query.includes('open') || query.includes('time')) {
-            return "We provide both online and offline services. Please contact us at 9871723292 or 9818328079 for current business hours.";
-        }
-        
-        // Default response
-        return "I don't have specific information about that. For more details, please contact Shibu MS at 9871723292, 9818328079 or email at ms.shibu29@gmail.com.";
-    }
-});
-// Modal functionality for gallery items
-document.addEventListener('DOMContentLoaded', function() {
+    // Modal functionality for gallery items
     // Gallery item data with extended descriptions and different modal images
     const galleryData = [
         {
@@ -659,120 +542,109 @@ document.addEventListener('DOMContentLoaded', function() {
     // DOM elements
     const galleryItems = document.querySelectorAll('.gallery-item');
     const modal = document.getElementById('gallery-modal');
-    const modalTitle = document.getElementById('modal-title');
-    const modalImage = document.getElementById('modal-image');
-    const modalDescription = document.getElementById('modal-description');
-    const closeModal = document.querySelector('.close-modal');
-    
-    // Create mobile close button
-    const mobileCloseButton = document.createElement('span');
-    mobileCloseButton.className = 'mobile-close-modal';
-    mobileCloseButton.innerHTML = '&times;';
-    modal.querySelector('.modal-content').appendChild(mobileCloseButton);
-    
-    // Add click event to each gallery item
-    galleryItems.forEach(item => {
-        item.addEventListener('click', function() {
-            const itemId = parseInt(this.getAttribute('data-id'));
-            const itemData = galleryData.find(data => data.id === itemId);
-            
-            if (itemData) {
-                // Don't set the title (remove the heading)
-                // modalTitle.textContent = itemData.title;
+    if (modal) {
+        const modalTitle = document.getElementById('modal-title');
+        const modalImage = document.getElementById('modal-image');
+        const modalDescription = document.getElementById('modal-description');
+        const closeModal = document.querySelector('.close-modal');
+        
+        // Create mobile close button if it doesn't exist
+        let mobileCloseButton = modal.querySelector('.mobile-close-modal');
+        if (!mobileCloseButton) {
+            mobileCloseButton = document.createElement('span');
+            mobileCloseButton.className = 'mobile-close-modal';
+            mobileCloseButton.innerHTML = '&times;';
+            modal.querySelector('.modal-content').appendChild(mobileCloseButton);
+        }
+        
+        // Add click event to each gallery item
+        galleryItems.forEach(item => {
+            item.addEventListener('click', function() {
+                const itemId = parseInt(this.getAttribute('data-id'));
+                const itemData = galleryData.find(data => data.id === itemId);
                 
-                // Use the custom modal image instead of the thumbnail
-                modalImage.src = itemData.modalImage;
-                modalImage.alt = itemData.title;
-                
-                modalDescription.textContent = itemData.description;
-                
-                // Display modal
-                modal.classList.add('show');
-                document.body.classList.add('modal-open');
-                
-                // Focus on modal for accessibility
-                modal.focus();
+                if (itemData) {
+                    // Don't set the title (remove the heading)
+                    // if (modalTitle) modalTitle.textContent = itemData.title;
+                    
+                    // Use the custom modal image instead of the thumbnail
+                    if (modalImage) {
+                        modalImage.src = itemData.modalImage;
+                        modalImage.alt = itemData.title;
+                    }
+                    
+                    if (modalDescription) modalDescription.textContent = itemData.description;
+                    
+                    // Display modal
+                    modal.classList.add('show');
+                    document.body.classList.add('modal-open');
+                    
+                    // Focus on modal for accessibility
+                    modal.focus();
+                }
+            });
+        });
+        
+        // Close modal when clicking the close button
+        if (closeModal) {
+            closeModal.addEventListener('click', function() {
+                closeModalFunction();
+            });
+        }
+        
+        // Close modal when clicking the mobile close button
+        if (mobileCloseButton) {
+            mobileCloseButton.addEventListener('click', function() {
+                closeModalFunction();
+            });
+        }
+        
+        // Close modal when clicking outside the modal content
+        modal.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                closeModalFunction();
             }
         });
-    });
-    
-    // Close modal when clicking the close button
-    closeModal.addEventListener('click', function() {
-        closeModalFunction();
-    });
-    
-    // Close modal when clicking the mobile close button
-    mobileCloseButton.addEventListener('click', function() {
-        closeModalFunction();
-    });
-    
-    // Close modal when clicking outside the modal content
-    modal.addEventListener('click', function(event) {
-        if (event.target === modal) {
-            closeModalFunction();
-        }
-    });
-    
-    // Close modal with ESC key
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Escape' && modal.classList.contains('show')) {
-            closeModalFunction();
-        }
-    });
-    
-    // Function to close modal
-    function closeModalFunction() {
-        modal.classList.remove('show');
-        setTimeout(() => {
-            document.body.classList.remove('modal-open');
-        }, 300); // Matches the transition time
-    }
-});
-// Add this to your existing script.js file
-document.addEventListener('DOMContentLoaded', function() {
-    // Get the "Explore Our Services" button
-    const exploreButton = document.querySelector('.hero-content .cta-button');
-    
-    // Add click event listener
-    if (exploreButton) {
-        exploreButton.addEventListener('click', function(e) {
-            e.preventDefault(); // Prevent default anchor behavior
-            
-            // Scroll to contact form section
-            const contactFormSection = document.getElementById('contact-form-section');
-            if (contactFormSection) {
-                contactFormSection.scrollIntoView({ behavior: 'smooth' });
+        
+        // Close modal with ESC key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && modal.classList.contains('show')) {
+                closeModalFunction();
             }
         });
+        
+        // Function to close modal
+        function closeModalFunction() {
+            modal.classList.remove('show');
+            setTimeout(() => {
+                document.body.classList.remove('modal-open');
+            }, 300); // Matches the transition time
+        }
     }
-});
-// Get the "Enquiry" navigation link specifically by text content
-const enquiryLinks = Array.from(document.querySelectorAll('.navbar-menu a')).filter(
-    link => link.textContent.trim() === 'Enquiry'
-);
 
-if (enquiryLinks.length > 0) {
-    const enquiryLink = enquiryLinks[0];
-    
-    enquiryLink.addEventListener('click', function(e) {
-        e.preventDefault();
+    // Get the "Enquiry" navigation link specifically by text content
+    const enquiryLinks = Array.from(document.querySelectorAll('.navbar-menu a')).filter(
+        link => link.textContent.trim() === 'Enquiry'
+    );
+
+    if (enquiryLinks.length > 0) {
+        const enquiryLink = enquiryLinks[0];
         
-        // Find the contact form section
-        const contactFormSection = document.getElementById('contact-form-section');
-        
-        if (contactFormSection) {
-            // Scroll to the contact form section
-            contactFormSection.scrollIntoView({ behavior: 'smooth' });
-            console.log('Scrolling to contact form section');
-        } else {
-            console.error('Contact form section not found!');
-        }
-    });
-    console.log('Enquiry link event listener added');
-} else {
-    console.error('Enquiry link not found!');
-}
-document.addEventListener('DOMContentLoaded', function() {
+        enquiryLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Find the contact form section
+            const contactFormSection = document.getElementById('contact-form-section');
+            
+            if (contactFormSection) {
+                // Scroll to the contact form section
+                contactFormSection.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                console.error('Contact form section not found!');
+            }
+        });
+    }
+
     // Get the "Learn More About Us" button in the About section
     const learnMoreButton = document.querySelector('.about-content .cta-button');
     
@@ -788,46 +660,18 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-});
-document.addEventListener('DOMContentLoaded', function() {
-    // CAPTCHA variables
+
+    // FIXED CAPTCHA FUNCTIONALITY
+    // Declare captcha variables at the beginning
+    let captchaValue = '';
     const captchaTextElement = document.getElementById('captchaText');
     const captchaInput = document.getElementById('captchaInput');
     const refreshButton = document.getElementById('refreshCaptcha');
-    const contactForm = document.getElementById('contactForm');
-    let captchaValue = '';
     
-    // Generate initial CAPTCHA
-    generateCaptcha();
-    
-    // Refresh CAPTCHA button handler
-    refreshButton.addEventListener('click', function() {
-        generateCaptcha();
-        captchaInput.value = '';
-    });
-    
-    // Form submission handler
-    contactForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Validate CAPTCHA
-        if (captchaInput.value === captchaValue) {
-            // CAPTCHA correct - you can add Email.js code here
-            alert('Form validation successful! Ready to be sent with Email.js');
-            
-            // For demonstration only - reset form
-            contactForm.reset();
-            generateCaptcha();
-        } else {
-            // CAPTCHA incorrect
-            alert('Incorrect verification code. Please try again.');
-            generateCaptcha();
-            captchaInput.value = '';
-        }
-    });
-    
-    // Generate simple CAPTCHA
+    // Generate CAPTCHA function
     function generateCaptcha() {
+        if (!captchaTextElement) return;
+        
         // Generate random string (5 characters)
         const characters = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
         captchaValue = '';
@@ -836,38 +680,66 @@ document.addEventListener('DOMContentLoaded', function() {
             captchaValue += characters.charAt(Math.floor(Math.random() * characters.length));
         }
         
-        // Display in HTML with applied style
+        // Display in HTML
         captchaTextElement.textContent = captchaValue;
+    }
+    
+    // Validate CAPTCHA function
+    function validateCaptcha() {
+        if (!captchaInput || !captchaValue) return true; // If no CAPTCHA elements exist, bypass validation
         
-        // Add this console log for debugging
-        console.log('CAPTCHA generated:', captchaValue);
+        if (captchaInput.value === captchaValue) {
+            return true;
+        } else {
+            alert('Incorrect verification code. Please try again.');
+            generateCaptcha();
+            captchaInput.value = '';
+            return false;
+        }
     }
-});
-function sendMail() {
-    let params = {
-        ShijilTelecom: "Shijil Telecom Contact Form",
-        time: new Date().toLocaleString(),
-        name: document.getElementById("firstName").value + " " + document.getElementById("lastName").value,
-        email: document.getElementById("email").value,
-        message: document.getElementById("message").value
-    };
-    emailjs.send("service_h798uiu", "template_e1i7b3p", params)
-        .then(function() {
-            alert("Email Sent!!");
-            document.getElementById("contactForm").reset();
-        })
-        .catch(function(error) {
-            console.log("Error sending email:", error);
-            alert("Failed to send email. Please try again.");
+    
+    // Initialize CAPTCHA if elements exist
+    if (captchaTextElement && refreshButton) {
+        // Generate initial CAPTCHA
+        generateCaptcha();
+        
+        // Refresh CAPTCHA button handler
+        refreshButton.addEventListener('click', function() {
+            generateCaptcha();
+            if (captchaInput) captchaInput.value = '';
         });
-}
-
-// Add event listener to the form
-document.getElementById("contactForm").addEventListener("submit", function(event) {
-    event.preventDefault();
-    sendMail();
-});
-// Clear the form after submission
-    function clearForm() {
-        document.getElementById('contactForm').reset();
     }
+    
+    // EmailJS functionality
+    function sendMail() {
+        let params = {
+            ShijilTelecom: "Shijil Telecom Contact Form",
+            time: new Date().toLocaleString(),
+            name: document.getElementById("firstName").value + " " + document.getElementById("lastName").value,
+            email: document.getElementById("email").value,
+            message: document.getElementById("message").value
+        };
+        
+        // Check if EmailJS is available
+        if (typeof emailjs !== 'undefined') {
+            emailjs.send("service_h798uiu", "template_e1i7b3p", params)
+                .then(function() {
+                    alert("Email Sent!!");
+                    clearForm();
+                })
+                .catch(function(error) {
+                    console.log("Error sending email:", error);
+                    alert("Failed to send email. Please try again.");
+                });
+        } else {
+            console.error("EmailJS is not loaded or configured properly");
+            alert("Email service is currently unavailable. Please try again later.");
+        }
+    }
+    
+    // Clear the form after submission
+    function clearForm() {
+        const contactForm = document.getElementById('contactForm');
+        if (contactForm) contactForm.reset();
+    }
+});
