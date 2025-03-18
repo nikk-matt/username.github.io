@@ -353,7 +353,7 @@ if (callUsBtn) {
 
         isTransitioning = true;
         currentSlide = (currentSlide + step + totalSlides) % totalSlides;
-        sliderImages.style.transform = translateX(-${currentSlide * 100}%);
+        sliderImages.style.transform = `translateX(-${currentSlide * 100}%)`;
 
         setTimeout(() => {
             isTransitioning = false;
@@ -867,4 +867,4 @@ document.getElementById("contactForm").addEventListener("submit", function(event
 // Clear the form after submission
     function clearForm() {
         document.getElementById('contactForm').reset();
-    } js
+    }
