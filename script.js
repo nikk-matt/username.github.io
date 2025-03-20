@@ -16,62 +16,36 @@ document.addEventListener('DOMContentLoaded', function() {
                 top: 0,
                 behavior: 'smooth'
             });
+            // Close mobile menu if open
+            closeMenuIfMobile();
         });
         // Make logo clickable
         logo.style.cursor = 'pointer';
     }
     
-    // About Us navigation - Fixed to go to "Transforming Ideas into Remarkable Solutions" section
+    // About Us navigation
     if (aboutLink) {
         aboutLink.addEventListener('click', function(e) {
             e.preventDefault();
             // Find the "Transforming Ideas into Remarkable Solutions" section
-            const sectionTitle = Array.from(document.querySelectorAll('h2, h3')).find(
-                heading => heading.textContent.includes('Transforming Ideas into Remarkable Solutions')
-            );
-            
-            if (sectionTitle) {
-                // Scroll to the section containing this title
-                sectionTitle.scrollIntoView({ behavior: 'smooth' });
+            const aboutSection = document.querySelector('#about');
+            if (aboutSection) {
+                aboutSection.scrollIntoView({ behavior: 'smooth' });
                 // Close mobile menu if open
                 closeMenuIfMobile();
-            } else {
-                // Fallback to the general about-us section if specific heading not found
-                const aboutSection = document.querySelector('#about');
-                if (aboutSection) {
-                    aboutSection.scrollIntoView({ behavior: 'smooth' });
-                    // Close mobile menu if open
-                    closeMenuIfMobile();
-                } else {
-                    console.error('About Us section not found!');
-                }
             }
         });
     }
     
-    // Services navigation - go to "Our Services" section
+    // Services navigation
     if (servicesLink) {
         servicesLink.addEventListener('click', function(e) {
             e.preventDefault();
-            
-            // First, try to find the gallery section by ID
             const gallerySection = document.querySelector('#gallery-section');
             if (gallerySection) {
                 gallerySection.scrollIntoView({ behavior: 'smooth' });
                 // Close mobile menu if open
                 closeMenuIfMobile();
-            } else {
-                // Try other selectors if specific ID not found
-                const anyGallerySection = document.querySelector('.gallery-section') || 
-                                        document.querySelector('[id*="gallery"]') ||
-                                        document.querySelector('[class*="gallery"]');
-                if (anyGallerySection) {
-                    anyGallerySection.scrollIntoView({ behavior: 'smooth' });
-                    // Close mobile menu if open
-                    closeMenuIfMobile();
-                } else {
-                    console.error('Gallery section not found!');
-                }
             }
         });
     }
@@ -86,8 +60,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 findUsSection.scrollIntoView({ behavior: 'smooth' });
                 // Close mobile menu if open
                 closeMenuIfMobile();
-            } else {
-                console.error('Find Us section not found!');
             }
         });
     }
@@ -101,47 +73,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 contactFormSection.scrollIntoView({ behavior: 'smooth' });
                 // Close mobile menu if open
                 closeMenuIfMobile();
-            } else {
-                console.error('Contact form section not found!');
             }
         });
     }
     
-   // Call Us button - Handle phone call or scroll to Find Us 
+    // Call Us button - Scroll to Find Us section or initiate call
     if (callUsBtn) {
         callUsBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            
-            // Try multiple selectors to find the Find Us section
-            const findUsSection = document.querySelector('#find-us') || 
-                                document.querySelector('.find-us') ||
-                                document.querySelector('[id*="find"]') ||
-                                document.querySelector('[class*="find"]');
-                                
-            // If direct ID/class not found, try looking for a heading with "Find Us" text
-            if (!findUsSection) {
-                const findUsHeading = Array.from(document.querySelectorAll('h1, h2, h3, h4, h5, h6')).find(
-                    heading => heading.textContent.includes('Find Us')
-                );
-                
-                if (findUsHeading) {
-                    // Scroll to the heading
-                    findUsHeading.scrollIntoView({ behavior: 'smooth' });
-                    // Close mobile menu if open
-                    closeMenuIfMobile();
-                } else {
-                    console.error('Find Us section not found!');
-                    // Fallback to the original behavior - initiate phone call
-                    // Close mobile menu if open before navigating
-                    closeMenuIfMobile();
-                    setTimeout(() => {
-                        window.location.href = 'tel:9871723292';
-                    }, 100);
-                }
-            } else {
+            const findUsSection = document.querySelector('#find-us');
+            if (findUsSection) {
                 findUsSection.scrollIntoView({ behavior: 'smooth' });
                 // Close mobile menu if open
                 closeMenuIfMobile();
+            } else {
+                // Fallback to phone call
+                closeMenuIfMobile();
+                window.location.href = 'tel:9871723292';
             }
         });
     }
@@ -179,27 +127,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const burgerMenuButton = document.querySelector('.burger-menu');
     if (burgerMenuButton) {
         burgerMenuButton.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
             toggleMenu();
         });
     }
     
-    // Close mobile menu when a link is clicked
-    const mobileMenuLinks = document.querySelectorAll('.navbar-menu a');
-    mobileMenuLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            // Let the individual link handlers handle their specific actions
-            // The closeMenuIfMobile function will be called by each handler
-        });
-    });
-
     // ENSURE BURGER MENU IS VISIBLE - FIX
     const burgerMenu = document.querySelector('.burger-menu');
     if (burgerMenu) {
-        // Make sure the burger menu is visible on mobile
-        burgerMenu.style.display = 'none'; // Initially hide on desktop
-        
         // Show/hide based on screen size
         function adjustMenuVisibility() {
             if (window.innerWidth <= 768) {
@@ -225,90 +163,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Call initially and on window resize
         adjustMenuVisibility();
         window.addEventListener('resize', adjustMenuVisibility);
-    } else {
-        console.error('Burger menu not found! Creating one...');
-        
-        // Create burger menu if it doesn't exist
-        const navbar = document.querySelector('.navbar');
-        if (navbar) {
-            const burgerMenuElem = document.createElement('div');
-            burgerMenuElem.className = 'burger-menu';
-            burgerMenuElem.innerHTML = `
-                <div class="burger-line"></div>
-                <div class="burger-line"></div>
-                <div class="burger-line"></div>
-            `;
-            burgerMenuElem.style.display = 'none'; // Initially hidden
-            burgerMenuElem.style.cursor = 'pointer';
-            
-            // Insert at the beginning of navbar
-            navbar.insertBefore(burgerMenuElem, navbar.firstChild);
-            
-            // Add event listener to toggle menu
-            burgerMenuElem.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                toggleMenu();
-            });
-            
-            // Show/hide based on screen size
-            function adjustMenuVisibility() {
-                if (window.innerWidth <= 768) {
-                    burgerMenuElem.style.display = 'block';
-                } else {
-                    burgerMenuElem.style.display = 'none';
-                    
-                    // Ensure navbar-menu is visible on desktop
-                    const navbarMenu = document.querySelector('.navbar-menu');
-                    if (navbarMenu) {
-                        navbarMenu.style.display = 'flex';
-                        navbarMenu.classList.remove('show');
-                    }
-                }
-            }
-            
-            // Call initially and on window resize
-            adjustMenuVisibility();
-            window.addEventListener('resize', adjustMenuVisibility);
-        }
-    }
-
-    // MAKE SURE NAVBAR MENU IS PROPERLY STYLED FOR MOBILE
-    const navbarMenu = document.querySelector('.navbar-menu');
-    if (navbarMenu) {
-        // Add these styles for mobile view when menu is shown
-        const styleForMobileMenu = `
-            @media (max-width: 768px) {
-                .navbar-menu {
-                    display: none;
-                    position: absolute;
-                    top: 100%;
-                    left: 0;
-                    width: 100%;
-                    background-color: #fff;
-                    flex-direction: column;
-                    padding: 20px;
-                    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-                    z-index: 100;
-                }
-                
-                .navbar-menu.show {
-                    display: block !important;
-                }
-                
-                .navbar-menu a {
-                    margin: 10px 0;
-                    padding: 10px;
-                    display: block;
-                    text-align: center;
-                }
-            }
-        `;
-        
-        // Add the styles to the document
-        const styleElem = document.createElement('style');
-        styleElem.textContent = styleForMobileMenu;
-        document.head.appendChild(styleElem);
     }
 
     // Close the burger menu when clicking outside
@@ -337,7 +191,13 @@ document.addEventListener('DOMContentLoaded', function() {
     let interval;
     let isTransitioning = false;
 
-    // Add move slide function to window for inline onclick handlers
+    // Add CSS transition through JavaScript only
+    const sliderImages = document.querySelector('.slider-images');
+    if (sliderImages) {
+        sliderImages.style.transition = 'transform 0.5s ease-in-out';
+    }
+
+    // Move slide function
     window.moveSlide = function(step) {
         if (isTransitioning || !sliderImages) return;
 
@@ -352,12 +212,6 @@ document.addEventListener('DOMContentLoaded', function() {
             startAutoSlide(); // Restart auto-sliding
         }, 500); // Match transition duration
     };
-
-    // Add CSS transition through JavaScript only
-    const sliderImages = document.querySelector('.slider-images');
-    if (sliderImages) {
-        sliderImages.style.transition = 'transform 0.5s ease-in-out';
-    }
 
     // Start automatic sliding
     function startAutoSlide() {
@@ -385,7 +239,7 @@ document.addEventListener('DOMContentLoaded', function() {
             slider.addEventListener('mouseleave', startAutoSlide);
         }
 
-        // Button click handlers (for buttons not using inline handlers)
+        // Button click handlers
         document.querySelectorAll('.slider-button').forEach(button => {
             button.addEventListener('click', (e) => {
                 const step = button.classList.contains('next') ? 1 : -1;
