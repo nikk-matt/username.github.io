@@ -33,11 +33,15 @@ document.addEventListener('DOMContentLoaded', function() {
             if (sectionTitle) {
                 // Scroll to the section containing this title
                 sectionTitle.scrollIntoView({ behavior: 'smooth' });
+                // Close mobile menu if open
+                closeMenuIfMobile();
             } else {
                 // Fallback to the general about-us section if specific heading not found
-                const aboutSection = document.querySelector('#about-us');
+                const aboutSection = document.querySelector('#about');
                 if (aboutSection) {
                     aboutSection.scrollIntoView({ behavior: 'smooth' });
+                    // Close mobile menu if open
+                    closeMenuIfMobile();
                 } else {
                     console.error('About Us section not found!');
                 }
@@ -45,44 +49,28 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Services navigation - Fixed to go to "Our Exquisite Gallery" section
+    // Services navigation - go to "Our Services" section
     if (servicesLink) {
         servicesLink.addEventListener('click', function(e) {
             e.preventDefault();
             
-            // First, try to find the exact section with the heading "Our Exquisite Gallery"
-            const sectionTitle = Array.from(document.querySelectorAll('h2, h3')).find(
-                heading => heading.textContent.trim() === 'Our Exquisite Gallery'
-            );
-            
-            if (sectionTitle) {
-                // Scroll to the section containing this exact title
-                sectionTitle.scrollIntoView({ behavior: 'smooth' });
+            // First, try to find the gallery section by ID
+            const gallerySection = document.querySelector('#gallery-section');
+            if (gallerySection) {
+                gallerySection.scrollIntoView({ behavior: 'smooth' });
+                // Close mobile menu if open
+                closeMenuIfMobile();
             } else {
-                // Second, try a more flexible search that includes the text
-                const flexibleTitle = Array.from(document.querySelectorAll('h2, h3')).find(
-                    heading => heading.textContent.includes('Our Exquisite Gallery')
-                );
-                
-                if (flexibleTitle) {
-                    // Scroll to the section containing this title
-                    flexibleTitle.scrollIntoView({ behavior: 'smooth' });
+                // Try other selectors if specific ID not found
+                const anyGallerySection = document.querySelector('.gallery-section') || 
+                                        document.querySelector('[id*="gallery"]') ||
+                                        document.querySelector('[class*="gallery"]');
+                if (anyGallerySection) {
+                    anyGallerySection.scrollIntoView({ behavior: 'smooth' });
+                    // Close mobile menu if open
+                    closeMenuIfMobile();
                 } else {
-                    // Third, try to find the gallery section by ID
-                    const gallerySection = document.querySelector('#exquisite-gallery');
-                    if (gallerySection) {
-                        gallerySection.scrollIntoView({ behavior: 'smooth' });
-                    } else {
-                        // Fourth, try to find any gallery section
-                        const anyGallerySection = document.querySelector('.gallery-section') || 
-                                                document.querySelector('[id*="gallery"]') ||
-                                                document.querySelector('[class*="gallery"]');
-                        if (anyGallerySection) {
-                            anyGallerySection.scrollIntoView({ behavior: 'smooth' });
-                        } else {
-                            console.error('Gallery section not found!');
-                        }
-                    }
+                    console.error('Gallery section not found!');
                 }
             }
         });
@@ -96,28 +84,30 @@ document.addEventListener('DOMContentLoaded', function() {
             const findUsSection = document.querySelector('#find-us');
             if (findUsSection) {
                 findUsSection.scrollIntoView({ behavior: 'smooth' });
+                // Close mobile menu if open
+                closeMenuIfMobile();
             } else {
                 console.error('Find Us section not found!');
             }
         });
     }
     
-    // Contact Us - show contact form modal
+    // Contact/Enquiry link - scroll to Contact section
     if (contactLink) {
         contactLink.addEventListener('click', function(e) {
             e.preventDefault();
-            // Open contact form modal
-            const contactModal = document.getElementById('simple-modal');
-            if (contactModal) {
-                contactModal.style.display = 'block';
-                document.body.style.overflow = 'hidden'; // Prevent scrolling
+            const contactFormSection = document.getElementById('contact-form-section');
+            if (contactFormSection) {
+                contactFormSection.scrollIntoView({ behavior: 'smooth' });
+                // Close mobile menu if open
+                closeMenuIfMobile();
             } else {
-                console.error('Contact modal not found!');
+                console.error('Contact form section not found!');
             }
         });
     }
     
-   // Call Us button - scroll to Find Us section 
+   // Call Us button - Handle phone call or scroll to Find Us 
     if (callUsBtn) {
         callUsBtn.addEventListener('click', function(e) {
             e.preventDefault();
@@ -137,13 +127,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (findUsHeading) {
                     // Scroll to the heading
                     findUsHeading.scrollIntoView({ behavior: 'smooth' });
+                    // Close mobile menu if open
+                    closeMenuIfMobile();
                 } else {
                     console.error('Find Us section not found!');
-                    // Fallback to the original behavior
-                    window.location.href = 'tel:9871723292';
+                    // Fallback to the original behavior - initiate phone call
+                    // Close mobile menu if open before navigating
+                    closeMenuIfMobile();
+                    setTimeout(() => {
+                        window.location.href = 'tel:9871723292';
+                    }, 100);
                 }
             } else {
                 findUsSection.scrollIntoView({ behavior: 'smooth' });
+                // Close mobile menu if open
+                closeMenuIfMobile();
             }
         });
     }
@@ -163,24 +161,36 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    // Helper function to close mobile menu
+    function closeMenuIfMobile() {
+        if (window.innerWidth <= 768) {
+            const navbarMenu = document.querySelector('.navbar-menu');
+            if (navbarMenu && navbarMenu.classList.contains('show')) {
+                navbarMenu.classList.remove('show');
+                navbarMenu.style.display = 'none';
+            }
+        }
+    }
+    
     // Make toggleMenu available globally
     window.toggleMenu = toggleMenu;
     
     // Add event listener to burger menu
     const burgerMenuButton = document.querySelector('.burger-menu');
     if (burgerMenuButton) {
-        burgerMenuButton.addEventListener('click', toggleMenu);
+        burgerMenuButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleMenu();
+        });
     }
     
     // Close mobile menu when a link is clicked
     const mobileMenuLinks = document.querySelectorAll('.navbar-menu a');
     mobileMenuLinks.forEach(link => {
-        link.addEventListener('click', function() {
-            const navbarMenu = document.querySelector('.navbar-menu');
-            if (window.innerWidth <= 768 && navbarMenu) {
-                navbarMenu.classList.remove('show');
-                navbarMenu.style.display = 'none';
-            }
+        link.addEventListener('click', function(e) {
+            // Let the individual link handlers handle their specific actions
+            // The closeMenuIfMobile function will be called by each handler
         });
     });
 
@@ -235,7 +245,11 @@ document.addEventListener('DOMContentLoaded', function() {
             navbar.insertBefore(burgerMenuElem, navbar.firstChild);
             
             // Add event listener to toggle menu
-            burgerMenuElem.addEventListener('click', toggleMenu);
+            burgerMenuElem.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleMenu();
+            });
             
             // Show/hide based on screen size
             function adjustMenuVisibility() {
@@ -323,30 +337,34 @@ document.addEventListener('DOMContentLoaded', function() {
     let interval;
     let isTransitioning = false;
 
+    // Add move slide function to window for inline onclick handlers
+    window.moveSlide = function(step) {
+        if (isTransitioning || !sliderImages) return;
+
+        isTransitioning = true;
+        clearInterval(interval); // Stop auto-sliding when manual navigation occurs
+        
+        currentSlide = (currentSlide + step + totalSlides) % totalSlides;
+        sliderImages.style.transform = `translateX(-${currentSlide * 100}%)`;
+
+        setTimeout(() => {
+            isTransitioning = false;
+            startAutoSlide(); // Restart auto-sliding
+        }, 500); // Match transition duration
+    };
+
     // Add CSS transition through JavaScript only
     const sliderImages = document.querySelector('.slider-images');
     if (sliderImages) {
         sliderImages.style.transition = 'transform 0.5s ease-in-out';
     }
 
-    // Move to a specific slide
-    function moveSlide(step) {
-        if (isTransitioning || !sliderImages) return;
-
-        isTransitioning = true;
-        currentSlide = (currentSlide + step + totalSlides) % totalSlides;
-        sliderImages.style.transform = `translateX(-${currentSlide * 100}%)`;
-
-        setTimeout(() => {
-            isTransitioning = false;
-        }, 500); // Match transition duration
-    }
-
     // Start automatic sliding
     function startAutoSlide() {
         interval = setInterval(() => {
-            if (!isTransitioning) {
-                moveSlide(1);
+            if (!isTransitioning && sliderImages) {
+                currentSlide = (currentSlide + 1) % totalSlides;
+                sliderImages.style.transform = `translateX(-${currentSlide * 100}%)`;
             }
         }, slideInterval);
     }
@@ -367,17 +385,11 @@ document.addEventListener('DOMContentLoaded', function() {
             slider.addEventListener('mouseleave', startAutoSlide);
         }
 
-        // Button click handlers
+        // Button click handlers (for buttons not using inline handlers)
         document.querySelectorAll('.slider-button').forEach(button => {
             button.addEventListener('click', (e) => {
-                if (isTransitioning) return;
-
-                const step = e.target.classList.contains('next') ? 1 : -1;
-                moveSlide(step);
-
-                // Restart auto-slide after manual interaction
-                stopAutoSlide();
-                startAutoSlide();
+                const step = button.classList.contains('next') ? 1 : -1;
+                window.moveSlide(step);
             });
         });
     }
@@ -386,6 +398,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const faqQuestions = document.querySelectorAll('.faq-unique-question');
     
     if (faqQuestions.length > 0) {
+        // First hide all answers
+        faqQuestions.forEach(question => {
+            const answer = question.nextElementSibling;
+            if (answer) {
+                answer.style.display = 'none';
+            }
+        });
+        
+        // Then add click event listeners
         faqQuestions.forEach(question => {
             question.addEventListener('click', function() {
                 // Toggle active class on clicked question
@@ -394,7 +415,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Get corresponding answer
                 const answer = this.nextElementSibling;
                 
-                // Toggle active class on answer
+                // Toggle active class and display on answer
                 if (answer) {
                     answer.classList.toggle('active');
                     
@@ -406,63 +427,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             });
-        });
-    }
-
-    // SIMPLE MODAL FUNCTIONALITY
-    // Add click event to the "Explore Our Services" button
-    const exploreButton = document.querySelector(".hero-content .cta-button");
-    if (exploreButton) {
-        exploreButton.addEventListener('click', function(e) {
-            e.preventDefault();
-            // First try to scroll to contact form
-            const contactFormSection = document.getElementById('contact-form-section');
-            if (contactFormSection) {
-                contactFormSection.scrollIntoView({ behavior: 'smooth' });
-            } else {
-                // Fallback to modal if contact form not found
-                const modal = document.getElementById('simple-modal');
-                if (modal) {
-                    modal.style.display = 'block';
-                    document.body.style.overflow = 'hidden'; // Prevent scrolling
-                }
-            }
-        });
-    }
-    
-    // Close modal when clicking on X
-    const closeButton = document.querySelector(".simple-close");
-    if (closeButton) {
-        closeButton.addEventListener('click', function() {
-            const modal = document.getElementById('simple-modal');
-            if (modal) {
-                modal.style.display = 'none';
-                document.body.style.overflow = 'auto'; // Enable scrolling
-            }
-        });
-    }
-    
-    // Close modal when clicking outside
-    window.addEventListener('click', function(event) {
-        const modal = document.getElementById('simple-modal');
-        if (modal && event.target == modal) {
-            modal.style.display = 'none';
-            document.body.style.overflow = 'auto'; // Enable scrolling
-        }
-    });
-    
-    // Form submission
-    const simpleForm = document.getElementById('simple-form');
-    if (simpleForm) {
-        simpleForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('Thank you for your inquiry! We will contact you shortly.');
-            const modal = document.getElementById('simple-modal');
-            if (modal) {
-                modal.style.display = 'none';
-                document.body.style.overflow = 'auto'; // Enable scrolling
-            }
-            this.reset();
         });
     }
 
@@ -541,6 +505,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
+        // Function to close modal
+        function closeModalFunction() {
+            modal.classList.remove('show');
+            setTimeout(() => {
+                document.body.classList.remove('modal-open');
+            }, 300); // Matches the transition time
+        }
+        
         // Add click event to each gallery item
         galleryItems.forEach(item => {
             item.addEventListener('click', function() {
@@ -574,14 +546,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
         
-        // Function to close modal
-        function closeModalFunction() {
-            modal.classList.remove('show');
-            setTimeout(() => {
-                document.body.classList.remove('modal-open');
-            }, 300); // Matches the transition time
-        }
-        
         // Close modal when clicking the close button
         if (closeModal) {
             closeModal.addEventListener('click', closeModalFunction);
@@ -607,6 +571,31 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // "Explore Our Services" button
+    const exploreButton = document.querySelector(".hero-content .cta-button");
+    if (exploreButton) {
+        exploreButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Scroll to services section
+            const gallerySection = document.getElementById('gallery-section');
+            if (gallerySection) {
+                gallerySection.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    }
+    
+    // "Learn More About Us" button
+    const learnMoreButton = document.querySelector('.about-content .cta-button');
+    if (learnMoreButton) {
+        learnMoreButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            const contactFormSection = document.getElementById('contact-form-section');
+            if (contactFormSection) {
+                contactFormSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    }
+
     // CONTACT FORM & CAPTCHA FUNCTIONALITY
     const contactForm = document.getElementById('contactForm');
     const captchaTextElement = document.getElementById('captchaText');
@@ -616,28 +605,29 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Generate CAPTCHA function
     function generateCaptcha() {
-        if (!captchaTextElement) return;
+        if (!captchaTextElement) return '';
         
         // Generate random string (5 characters)
         const characters = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
-        captchaValue = '';
+        let newCaptchaValue = '';
         
         for (let i = 0; i < 5; i++) {
-            captchaValue += characters.charAt(Math.floor(Math.random() * characters.length));
+            newCaptchaValue += characters.charAt(Math.floor(Math.random() * characters.length));
         }
         
         // Display in HTML
-        captchaTextElement.textContent = captchaValue;
+        captchaTextElement.textContent = newCaptchaValue;
+        return newCaptchaValue;
     }
     
     // Generate initial CAPTCHA if elements exist
     if (captchaTextElement && captchaInput) {
-        generateCaptcha();
+        captchaValue = generateCaptcha();
         
         // Refresh CAPTCHA button handler
         if (refreshButton) {
             refreshButton.addEventListener('click', function() {
-                generateCaptcha();
+                captchaValue = generateCaptcha();
                 if (captchaInput) captchaInput.value = '';
             });
         }
@@ -651,19 +641,29 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         try {
+            const firstName = document.getElementById("firstName");
+            const lastName = document.getElementById("lastName");
+            const email = document.getElementById("email");
+            const message = document.getElementById("message");
+            
+            if (!firstName || !lastName || !email || !message) {
+                console.error('Form elements not found');
+                return false;
+            }
+            
             let params = {
                 ShijilTelecom: "Shijil Telecom Contact Form",
                 time: new Date().toLocaleString(),
-                name: document.getElementById("firstName").value + " " + document.getElementById("lastName").value,
-                email: document.getElementById("email").value,
-                message: document.getElementById("message").value
+                name: firstName.value + " " + lastName.value,
+                email: email.value,
+                message: message.value
             };
             
             emailjs.send("service_h798uiu", "template_e1i7b3p", params)
                 .then(function() {
                     alert("Email Sent!!");
                     if (contactForm) contactForm.reset();
-                    if (captchaTextElement) generateCaptcha();
+                    if (captchaTextElement) captchaValue = generateCaptcha();
                 })
                 .catch(function(error) {
                     console.log("Error sending email:", error);
@@ -686,7 +686,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (captchaInput && captchaValue) {
                 if (captchaInput.value !== captchaValue) {
                     alert('Incorrect verification code. Please try again.');
-                    generateCaptcha();
+                    captchaValue = generateCaptcha();
                     captchaInput.value = '';
                     return;
                 }
@@ -699,37 +699,13 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!emailSent) {
                 alert('Thank you for your message. We will get back to you soon!');
                 contactForm.reset();
-                if (captchaTextElement) generateCaptcha();
+                if (captchaTextElement) captchaValue = generateCaptcha();
             }
         });
     }
     
-    // Get all Learn More / Enquiry buttons
-    const learnMoreButton = document.querySelector('.about-content .cta-button');
-    const enquiryLinks = Array.from(document.querySelectorAll('.navbar-menu a')).filter(
-        link => link.textContent.trim() === 'Enquiry'
-    );
-    
-    // Add click event listeners to scroll to contact form
-    if (learnMoreButton) {
-        learnMoreButton.addEventListener('click', function(e) {
-            e.preventDefault();
-            const contactFormSection = document.getElementById('contact-form-section');
-            if (contactFormSection) {
-                contactFormSection.scrollIntoView({ behavior: 'smooth' });
-            }
-        });
-    }
-    
-    if (enquiryLinks.length > 0) {
-        enquiryLinks[0].addEventListener('click', function(e) {
-            e.preventDefault();
-            const contactFormSection = document.getElementById('contact-form-section');
-            if (contactFormSection) {
-                contactFormSection.scrollIntoView({ behavior: 'smooth' });
-            } else {
-                console.error('Contact form section not found!');
-            }
-        });
+    // Check if any required scripts are missing
+    if (typeof emailjs === 'undefined') {
+        console.warn('EmailJS library not loaded. Contact form will use fallback behavior.');
     }
 });
