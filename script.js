@@ -95,16 +95,23 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // MOBILE MENU FUNCTIONALITY
-    // Toggle menu function
+    // Toggle menu function - improved
     function toggleMenu() {
         const navbarMenu = document.querySelector('.navbar-menu');
         if (navbarMenu) {
             if (navbarMenu.classList.contains('show')) {
                 navbarMenu.classList.remove('show');
-                navbarMenu.style.display = 'none';
+                // Use a short timeout to allow the animation to complete
+                setTimeout(() => {
+                    if (!navbarMenu.classList.contains('show')) {
+                        navbarMenu.style.display = 'none';
+                    }
+                }, 300);
             } else {
+                navbarMenu.style.display = 'flex';
+                // Force a reflow before adding the class for the animation to work
+                navbarMenu.offsetHeight;
                 navbarMenu.classList.add('show');
-                navbarMenu.style.display = 'block';
             }
         }
     }
@@ -165,21 +172,32 @@ document.addEventListener('DOMContentLoaded', function() {
         window.addEventListener('resize', adjustMenuVisibility);
     }
 
-    // Close the burger menu when clicking outside
+    // Add this improved event listener for outside clicks
     document.addEventListener('click', function(event) {
         const navbarMenu = document.querySelector('.navbar-menu');
-        const burgerMenuBtn = document.querySelector('.burger-menu');
+        const burgerMenu = document.querySelector('.burger-menu');
         
-        // Check if the menu is open and if the click is outside both the menu and burger button
+        // Close only if menu is open, click is outside menu and outside burger button
         if (navbarMenu && 
             navbarMenu.classList.contains('show') && 
             !navbarMenu.contains(event.target) && 
-            burgerMenuBtn && 
-            !burgerMenuBtn.contains(event.target)) {
+            burgerMenu && 
+            !burgerMenu.contains(event.target)) {
             
-            // Close the menu
             navbarMenu.classList.remove('show');
-            navbarMenu.style.display = 'none';
+            setTimeout(() => {
+                if (!navbarMenu.classList.contains('show')) {
+                    navbarMenu.style.display = 'none';
+                }
+            }, 300);
+        }
+    });
+
+    // Prevent event bubbling when clicking on menu items
+    document.querySelector('.navbar-menu').addEventListener('click', function(event) {
+        // If clicking a navigation link, don't propagate the click event
+        if (event.target.tagName === 'A') {
+            event.stopPropagation();
         }
     });
 
