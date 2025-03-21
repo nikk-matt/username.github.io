@@ -1,4 +1,3 @@
-
 * {
     margin: 0;
     padding: 0;
@@ -70,30 +69,49 @@ body {
 }
 
 @media (max-width: 768px) {
-    .navbar-menu {
-        display: none;
-        flex-direction: column;
-        position: absolute;
-        top: 60px;
-        right: 20px;
-        background-color: white;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        padding: 20px;
-        width: 200px;
-        z-index: 15; /* Added z-index */
-    }
-
-    .navbar-menu.show {
-        display: flex;
-    }
-
-    .navbar-menu a {
-        margin: 10px 0;
-    }
-
     .burger-menu {
         display: flex;
+        position: relative;
+        right: 0;
+        z-index: 1000;
+        cursor: pointer;
     }
+    
+    .navbar-menu {
+        display: none;
+        position: absolute;
+        top: 70px;
+        right: 0;
+        background-color: white;
+        width: 100%;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        z-index: 999;
+        flex-direction: column;
+        transition: all 0.3s ease;
+    }
+    
+    .navbar-menu.show {
+        display: flex;
+        animation: fadeIn 0.3s ease;
+    }
+    
+    .navbar-menu a {
+        margin: 10px 0;
+        padding: 10px 15px;
+        width: 100%;
+        text-align: center;
+    }
+    
+    .navbar-menu .cta-button {
+        margin: 10px auto;
+        width: auto;
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* Ensure the header "Shijil Telecom" and navigation links use the font 'Rajdhani' */
